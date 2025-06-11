@@ -588,7 +588,7 @@ class UnetSkipConnectionBlockResizeConv(nn.Module):
             norm_layer          -- normalization layer
             use_dropout (bool)  -- if use dropout layers.
         """
-        super(UnetSkipConnectionBlock, self).__init__()
+        super(UnetSkipConnectionBlockResizeConv, self).__init__()
         self.outermost = outermost
         if type(norm_layer) == functools.partial:
             use_bias = norm_layer.func == nn.InstanceNorm2d
