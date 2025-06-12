@@ -604,25 +604,22 @@ class UnetSkipConnectionBlockResizeConv(nn.Module):
         upnorm = norm_layer(outer_nc)
 
         if outermost:
-            upsamp = nn.Upsample(scale_factor = 2, mode='bilinear') 
-            uppad = nn.ReflectionPad2d(1)
-            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=0)
+            upconv = [nn.Upsample(scale_factor = 2, mode='bilinear'), nn.ReflectionPad2d(1), 
+                      nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=0)]
             down = [downconv]
-            up = [uprelu, upsamp, uppad, upconv, nn.Tanh()]
+            up = [uprelu, upconv, nn.Tanh()]
             model = down + [submodule] + up
         elif innermost:
-            upsamp = nn.Upsample(scale_factor = 2, mode='bilinear')
-            uppad = nn.ReflectionPad2d(1) 
-            upconv = nn.Conv2d(inner_nc, outer_nc, kernel_size=3, stride=1, padding=0, bias=use_bias)
+            upconv = [nn.Upsample(scale_factor = 2, mode='bilinear'), nn.ReflectionPad2d(1), 
+                      nn.Conv2d(inner_nc, outer_nc, kernel_size=3, stride=1, padding=0, bias=use_bias)]
             down = [downrelu, downconv]
-            up = [uprelu, upsamp, uppad, upconv, upnorm]
+            up = [uprelu, upconv, upnorm]
             model = down + up
         else:
-            upsamp = nn.Upsample(scale_factor = 2, mode='bilinear')
-            uppad = nn.ReflectionPad2d(1) 
-            upconv = nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=0, bias=use_bias)
+            upconv = [nn.Upsample(scale_factor = 2, mode='bilinear'), nn.ReflectionPad2d(1), 
+                      nn.Conv2d(inner_nc * 2, outer_nc, kernel_size=3, stride=1, padding=0, bias=use_bias)]
             down = [downrelu, downconv, downnorm]
-            up = [uprelu, upsamp, uppad, upconv, upnorm]
+            up = [uprelu, upconv, upnorm]
 
             if use_dropout:
                 model = down + [submodule] + up + [nn.Dropout(0.5)]
